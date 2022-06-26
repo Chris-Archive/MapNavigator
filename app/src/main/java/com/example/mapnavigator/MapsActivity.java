@@ -64,7 +64,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
-
         if(ActivityCompat.checkSelfPermission(MapsActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
 
@@ -96,7 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getRoute(currentLocationMarker, marker, "driving");
             });
         });
-
+        
         this.setButtons();
     }
 
@@ -198,7 +197,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             markers.clear();
-            currentPolyline.remove();
+            
+            if(currentPolyline != null){
+                currentPolyline.remove();
+            }
         });
     }
 }

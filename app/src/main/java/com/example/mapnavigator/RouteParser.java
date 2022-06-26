@@ -55,12 +55,12 @@ public class RouteParser extends AsyncTask<String, Integer, List<List<Concurrent
 
     @Override
     protected List<List<ConcurrentHashMap<String, String>>> doInBackground(String... strings) {
-        JSONObject request;
+        JSONObject response;
         List<List<ConcurrentHashMap<String, String>>> routes = null;
 
         try {
-            request = new JSONObject(strings[0]);
-            routes = parseRoutes(request);
+            response = new JSONObject(strings[0]);
+            routes = parseRoutes(response);
         }
         catch(Exception e){
             Log.d("RouteParser::doInBackground", e.toString());
@@ -69,13 +69,13 @@ public class RouteParser extends AsyncTask<String, Integer, List<List<Concurrent
         return routes;
     }
 
-    private List<List<ConcurrentHashMap<String, String>>> parseRoutes(JSONObject request){
+    private List<List<ConcurrentHashMap<String, String>>> parseRoutes(JSONObject response){
         List<List<ConcurrentHashMap<String, String>>> routes = new ArrayList<>();
 
         JSONArray jsonRoutes, jsonLegs, jsonSteps;
 
         try {
-            jsonRoutes = request.getJSONArray("routes");
+            jsonRoutes = response.getJSONArray("routes");
 
             for(int i = 0; i < jsonRoutes.length(); ++i){
                 jsonLegs = ((JSONObject)jsonRoutes.get(i)).getJSONArray("legs");
