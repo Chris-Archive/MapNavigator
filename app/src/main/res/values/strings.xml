@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Map Navigator</string>
+    <string name="title_activity_maps">MapsActivity</string>
+
+    <string name="API_KEY">AIzaSyAg1ZNNaw6rgnVp09BSL6_0nSAv1wFkQoQ</string>
+    <string name="CURRENT_LOCATION">Current Location</string>
+</resources>
