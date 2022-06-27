@@ -70,7 +70,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(binding.getRoot());
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
-
+        
+        //Check if the user has granted the appropriate permissions
         if(ActivityCompat.checkSelfPermission(MapsActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
 
@@ -216,7 +217,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //TODO: Refactor into Spinner class
     private void setSpinners(){
         final Spinner travel_method_menu = findViewById(R.id.travel_method_menu_spinner);
-        String[] travel_methods = {"Driving", "Walking"};
+        String[] travel_methods = {"Driving", "Walking", "Bicycling", "Transit"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(MapsActivity.this, R.layout.travel_method_list, travel_methods);
         
         adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
@@ -228,14 +229,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 routeMode = adapterView.getItemAtPosition(i).toString();
-                routeMode = routeMode.toLowerCase();
-                Log.d("onItemSelected", routeMode);
                 Toast.makeText(MapsActivity.this, routeMode, Toast.LENGTH_SHORT).show();
+                routeMode = routeMode.toLowerCase();
             }
         
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-            
+                routeMode = "driving";
             }
         });
     }
