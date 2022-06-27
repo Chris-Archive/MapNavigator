@@ -11,7 +11,12 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -28,7 +33,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskCallback {
@@ -40,9 +44,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private Marker currentLocationMarker;
     private Polyline currentPolyline;
-
+    private String routeMode;
+    
     private final int LOCATION_REFRESH_TIME = 10000; //10 seconds to update
     private final int LOCATION_REFRESH_DISTANCE = 500; //500 meters to update
+    
 
     ConcurrentHashMap<Marker, Integer> markers;
     int markerCount;
@@ -51,6 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         currentLocationMarker = null;
         markers = new ConcurrentHashMap<>();
         markerCount = 1;
+        routeMode = "driving";
     }
 
     @Override
@@ -63,7 +70,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(binding.getRoot());
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
-
+        
+        //Check if the user has granted the appropriate permissions
         if(ActivityCompat.checkSelfPermission(MapsActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
 
@@ -92,11 +100,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 markers.put(marker, markerCount++);
 
-                getRoute(currentLocationMarker, marker, "driving");
+                getRoute(currentLocationMarker, marker, routeMode);
             });
         });
         
         this.setButtons();
+        this.setSpinners();
     }
 
     /**
@@ -186,11 +195,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             currentPolyline = googleMap.addPolyline((PolylineOptions) polylineProps[0]);
         });
     }
-
+    
+    //TODO: Refactor into Button class
     private void setButtons(){
-        final Button clearMapBtn = findViewById(R.id.clear_map_btn);
-
-        clearMapBtn.setOnClickListener(press -> {
+        final Button clear_map_btn = findViewById(R.id.clear_map_btn);
+    
+        clear_map_btn.setOnClickListener(press -> {
             //Each marker must be cleared individually
             for(Marker marker : markers.keySet()){
                 marker.remove();
@@ -200,6 +210,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             
             if(currentPolyline != null){
                 currentPolyline.remove();
+            }
+        });
+    }
+    
+    //TODO: Refactor into Spinner class
+    private void setSpinners(){
+        final Spinner travel_method_menu = findViewById(R.id.travel_method_menu_spinner);
+        String[] travel_methods = {"Driving", "Walking", "Bicycling", "Transit"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MapsActivity.this, R.layout.travel_method_list, travel_methods);
+        
+        adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+    
+        travel_method_menu.setAdapter(adapter);
+        
+        travel_method_menu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+        
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                routeMode = adapterView.getItemAtPosition(i).toString();
+                Toast.makeText(MapsActivity.this, routeMode, Toast.LENGTH_SHORT).show();
+                routeMode = routeMode.toLowerCase();
+            }
+        
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                routeMode = "driving";
             }
         });
     }

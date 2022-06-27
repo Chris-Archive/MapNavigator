@@ -13,7 +13,8 @@
         android:id="@+id/ButtonLayout"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_alignParentBottom="true">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <Button
             android:layout_width="18mm"
@@ -22,6 +23,12 @@
             android:text="Clear Map"
             android:id="@+id/clear_map_btn"
             />
+
+        <Spinner
+            android:id="@+id/travel_method_menu_spinner"
+            android:layout_width="24mm"
+            android:layout_height="12mm"
+            android:background="@android:drawable/btn_dropdown" />
     </LinearLayout>
 
 </fragment>
