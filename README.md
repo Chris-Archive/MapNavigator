@@ -12,6 +12,7 @@ Please note that due to emulation, the current location will always be Google's 
 
 A Google API key on the Google Maps Platform is required with the following APIs:
 - Directions API
+- Distance Matrix API
 - Maps SDK for Android<br>
 
 The API key must be added in the following file:
