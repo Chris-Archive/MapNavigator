@@ -1,5 +1,6 @@
 package com.example.mapnavigator;
 
 public interface TaskCallback {
-    void onTaskDone(Object... values);
+    void onRouteDone(Object... values);
+    void onDistanceMatrixDone(Object... values);
 }

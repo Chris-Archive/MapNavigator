@@ -12,21 +12,20 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class DirectionsApi extends AsyncTask<String, Void, String> {
+public class DirectionsAPICaller extends AsyncTask<String, Void, String> {
     private Context context;
-    private String directionMode;
-
-    public DirectionsApi(Context context, String directionMode){
+    private APIResponseParser task;
+    
+    public DirectionsAPICaller(Context context, APIResponseParser task){
         this.context = context;
-        this.directionMode = directionMode;
+        this.task = task;
     }
 
     @Override
     protected void onPostExecute(String str){
         super.onPostExecute(str);
-
-        RouteParser parser = new RouteParser(context, directionMode);
-        parser.execute(str);
+        
+        task.startExecution(context, str);
     }
 
 
