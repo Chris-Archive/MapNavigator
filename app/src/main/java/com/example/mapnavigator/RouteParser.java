@@ -16,13 +16,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RouteParser extends AsyncTask<String, Integer, List<List<ConcurrentHashMap<String, String>>>> {
-    final private TaskCallback taskCallback;
-    final private String directionMode;
-
-    public RouteParser(Context context, String mode){
+public class RouteParser extends AsyncTask<String, Integer, List<List<ConcurrentHashMap<String, String>>>> implements APIResponseParser {
+    private TaskCallback taskCallback;
+    
+    public RouteParser(){
+        taskCallback = null;
+    }
+    
+    public RouteParser(Context context){
         taskCallback = (TaskCallback) context;
-        directionMode = mode;
+    }
+    
+    @Override
+    public void startExecution(Context context, String response){
+        taskCallback = (TaskCallback)context;
+        
+        this.execute(response);
     }
 
     @Override
@@ -49,7 +58,7 @@ public class RouteParser extends AsyncTask<String, Integer, List<List<Concurrent
         }
 
         if(lineOptions != null){
-            taskCallback.onTaskDone(lineOptions);
+            taskCallback.onRouteDone(lineOptions);
         }
     }
 

@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskCallback {
@@ -154,16 +155,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param mode The form of traversal {Driving, Walking}
      * @return The URL
      */
-    private String getUrl(LatLng sourcePos,
-                          LatLng destinationPos,
-                          String mode) {
-        String url = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
+    private String getRouteUrl(LatLng sourcePos,
+                               LatLng destinationPos,
+                               String mode) {
+    
+        return "https://maps.googleapis.com/maps/api/directions/json?origin=" +
                 sourcePos.latitude + "," + sourcePos.longitude + "&destination=" + destinationPos.latitude + "," + destinationPos.longitude  +
                 "&mode=" + mode + "&key=" + getString(R.string.API_KEY);
-
+    }
+    
+    private String getDistanceMatrixUrl(LatLng sourcePos,
+                                        LatLng destinationPos,
+                                        String mode) {
+        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
+                sourcePos.latitude + "," + sourcePos.longitude + "&destinations=" + destinationPos.latitude + "," + destinationPos.longitude  +
+                "&mode=" + mode + "&key=" + getString(R.string.API_KEY);
+        
         return url;
     }
-
     /**
      * Get the URL and initiate the API call.
      * @param source The source marker
@@ -176,17 +185,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(source == null || destination == null){
             return;
         }
+        
+        String route_url = getRouteUrl(source.getPosition(), destination.getPosition(), mode);
+        String distance_matrix_url = getDistanceMatrixUrl(source.getPosition(), destination.getPosition(), mode);
 
-        String url = getUrl(source.getPosition(), destination.getPosition(), mode);
+        DirectionsAPICaller route_API_call = new DirectionsAPICaller(MapsActivity.this, new RouteParser());
+        DirectionsAPICaller distance_matrix_API_call = new DirectionsAPICaller(MapsActivity.this, new DistanceMatrixParser());
+        
+        route_API_call.execute(route_url);
+        distance_matrix_API_call.execute(distance_matrix_url);
 
-        DirectionsApi directionsApiCall = new DirectionsApi(MapsActivity.this, mode);
-        directionsApiCall.execute(url);
-
-        Log.d("MapsActivity::getRoute", url);
+        Log.d("MapsActivity::getRoute", route_url);
+        Log.d("MapsActivity::getRoute", distance_matrix_url);
     }
-
+    
+    
     @Override
-    public void onTaskDone(Object... polylineProps){
+    public void onRouteDone(Object... polylineProps){
         if(currentPolyline != null){
             currentPolyline.remove();
         }
@@ -194,6 +209,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(googleMap -> {
             currentPolyline = googleMap.addPolyline((PolylineOptions) polylineProps[0]);
         });
+    }
+    
+    @Override
+    public void onDistanceMatrixDone(Object... values) {
+        Map<String, String> distance_duration = (Map<String, String>)values[0];
+        String text = distance_duration.get("distance") + " in " + distance_duration.get("duration");
+        
+        Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
     }
     
     //TODO: Refactor into Button class
