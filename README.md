@@ -25,3 +25,7 @@ The API key must be added in the following file:
 ## Example Images
 
 ![Current Location](/Image%20Examples/Current%20Location.png)
+![Routing by Driving](/Image%20Examples/Routing%20by%20Driving.png)
+![Routing Options](/Image%20Examples/Routing%20Options.png)
+![Routing by Walking with Distance and Time](/Image%20Examples/Routing%20by%20Walking%20with%20Distance%20and%20Time.png)
+![San Jose to New York City by Driving](/Image%20Examples/San%20Jose%20to%20New%20York%20City%20by%20Driving.png)
