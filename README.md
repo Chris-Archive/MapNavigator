@@ -21,3 +21,7 @@ The API key must be added in the following file:
 
 ## Credits
 - Michale Friedrich: For designing and developing the initial button functionalities and their algorithms as well the UI.
+
+## Example Images
+
+![Current Location](/Image%20Examples/Current%20Location.png)
