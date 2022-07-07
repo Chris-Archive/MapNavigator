@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.buttons.ClearMapBtn;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -44,21 +45,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient client;
     private LocationManager locationManager;
     private Marker currentLocationMarker;
-    private Polyline currentPolyline;
-    private String routeMode;
+    private Polyline current_polyline;
+    private String route_mode;
     
     private final int LOCATION_REFRESH_TIME = 10000; //10 seconds to update
     private final int LOCATION_REFRESH_DISTANCE = 500; //500 meters to update
     
 
     ConcurrentHashMap<Marker, Integer> markers;
+    ConcurrentHashMap<Polyline, Integer> polylines;
     int markerCount;
 
     public MapsActivity(){
         currentLocationMarker = null;
         markers = new ConcurrentHashMap<>();
+        polylines = new ConcurrentHashMap<>();
         markerCount = 1;
-        routeMode = "driving";
+        route_mode = "driving";
     }
 
     @Override
@@ -101,7 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 markers.put(marker, markerCount++);
 
-                getRoute(currentLocationMarker, marker, routeMode);
+                getRoute(currentLocationMarker, marker, route_mode);
             });
         });
         
@@ -202,12 +205,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     
     @Override
     public void onRouteDone(Object... polylineProps){
-        if(currentPolyline != null){
-            currentPolyline.remove();
-        }
 
         mapFragment.getMapAsync(googleMap -> {
-            currentPolyline = googleMap.addPolyline((PolylineOptions) polylineProps[0]);
+            polylines.put(googleMap.addPolyline((PolylineOptions) polylineProps[0]), 1);
         });
     }
     
@@ -219,46 +219,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
     }
     
-    //TODO: Refactor into Button class
     private void setButtons(){
         final Button clear_map_btn = findViewById(R.id.clear_map_btn);
-    
-        clear_map_btn.setOnClickListener(press -> {
-            //Each marker must be cleared individually
-            for(Marker marker : markers.keySet()){
-                marker.remove();
-            }
-
-            markers.clear();
-            
-            if(currentPolyline != null){
-                currentPolyline.remove();
-            }
-        });
+        ClearMapBtn clear_map = new ClearMapBtn();
+        
+        clear_map.clearMap(clear_map_btn, markers, polylines);
     }
     
     //TODO: Refactor into Spinner class
     private void setSpinners(){
-        final Spinner travel_method_menu = findViewById(R.id.travel_method_menu_spinner);
+        final Spinner travel_method_dropdown = findViewById(R.id.travel_method_menu_spinner);
+        
         String[] travel_methods = {"Driving", "Walking", "Bicycling", "Transit"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(MapsActivity.this, R.layout.travel_method_list, travel_methods);
-        
-        adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
     
-        travel_method_menu.setAdapter(adapter);
-        
-        travel_method_menu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MapsActivity.this,
+                R.layout.travel_method_list, travel_methods);
+    
+        adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+        travel_method_dropdown.setAdapter(adapter);
+        travel_method_dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
         
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                routeMode = adapterView.getItemAtPosition(i).toString();
-                Toast.makeText(MapsActivity.this, routeMode, Toast.LENGTH_SHORT).show();
-                routeMode = routeMode.toLowerCase();
+                route_mode = adapterView.getItemAtPosition(i).toString();
+                Toast.makeText(MapsActivity.this, route_mode, Toast.LENGTH_SHORT).show();
+                route_mode = route_mode.toLowerCase();
+                System.out.printf("%s\n", route_mode);
             }
         
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                routeMode = "driving";
+                route_mode = "driving";
             }
         });
     }
