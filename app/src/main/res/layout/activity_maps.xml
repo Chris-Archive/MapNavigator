@@ -24,6 +24,14 @@
             android:id="@+id/clear_map_btn"
             />
 
+        <Button
+            android:layout_width="18mm"
+            android:layout_height="12mm"
+            android:textSize="8pt"
+            android:text="Draw Route"
+            android:id="@+id/draw_route_btn"
+            />
+
         <Spinner
             android:id="@+id/travel_method_menu_spinner"
             android:layout_width="24mm"
