@@ -1,6 +1,8 @@
 package com.example.mapnavigator;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -37,7 +39,7 @@ import com.google.android.gms.tasks.Task;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, TaskCallback {
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
@@ -63,6 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         route_mode = "driving";
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +74,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
+        
+        Toolbar main_toolbar = findViewById(R.id.main_toolbar);
+        main_toolbar.setTitle(R.string.app_name);
+        setSupportActionBar(main_toolbar);
+        
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
         
@@ -107,8 +115,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         });
         
-        this.setButtons();
-        this.setSpinners();
+        //this.setButtons();
+        //this.setSpinners();
     }
 
     /**
@@ -217,7 +225,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         
         Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
     }
-    
+    /*
     private void setButtons(){
         final Button clear_map_btn = findViewById(R.id.clear_map_btn);
         ClearMapBtn clear_map = new ClearMapBtn();
@@ -252,4 +260,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+    
+     */
 }
