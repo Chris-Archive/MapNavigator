@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.tracecallbacks.TaskCallback;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 

@@ -5,8 +5,10 @@
       <map>
         <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/activity_maps.xml" value="0.25" />
         <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/toolbar.xml" value="0.5442708333333334" />
+        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/toolbar_settings.xml" value="0.4265625" />
         <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/travel_method_list.xml" value="0.5432291666666667" />
         <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/menu/menu.xml" value="0.44895833333333335" />
+        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/menu/toolbar_menu.xml" value="0.5442708333333334" />
       </map>
     </option>
   </component>

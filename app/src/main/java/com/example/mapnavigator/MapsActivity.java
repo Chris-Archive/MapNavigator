@@ -4,10 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -15,14 +15,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
+import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.buttons.ClearMapBtn;
+import com.example.menus.ToolbarSettings;
+import com.example.tracecallbacks.SettingsCallback;
+import com.example.tracecallbacks.TaskCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,15 +39,15 @@ import com.google.android.gms.tasks.Task;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, TaskCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, TaskCallback, SettingsCallback {
 
-    private GoogleMap mMap;
     private SupportMapFragment mapFragment;
     private ActivityMapsBinding binding;
     private FusedLocationProviderClient client;
     private LocationManager locationManager;
     private Marker currentLocationMarker;
     private String route_mode;
+    private String distance_unit;
     
     private final int LOCATION_REFRESH_TIME = 10000; //10 seconds to update
     private final int LOCATION_REFRESH_DISTANCE = 500; //500 meters to update
@@ -65,6 +63,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         polylines = new ConcurrentHashMap<>();
         markerCount = 1;
         route_mode = "driving";
+        distance_unit = "metric";
     }
     
     @SuppressLint("MissingPermission")
@@ -77,7 +76,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         setContentView(binding.getRoot());
         
-
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
         
         //Check if the user has granted the appropriate permissions
@@ -123,7 +121,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+    
     }
 
     @Override
@@ -224,6 +222,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         
         Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
     }
+    
+    @Override
+    public void onDistanceSetting(Object... values){
+        distance_unit = (String)values[0];
+        System.out.printf("%s\n", distance_unit);
+    }
+    
     /*
     private void setButtons(){
         final Button clear_map_btn = findViewById(R.id.clear_map_btn);
@@ -274,5 +279,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         settings.inflate(R.menu.toolbar_menu, menu);
         
         return settings != null;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.main_toolbar_settings: {
+                Toast.makeText(MapsActivity.this, "Selected Settings", Toast.LENGTH_SHORT).show();
+                Intent settings_menu = new Intent(MapsActivity.this, ToolbarSettings.class);
+                startActivity(settings_menu);
+            }
+            
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
     }
 }
