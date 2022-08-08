@@ -13,6 +13,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -64,7 +66,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerCount = 1;
         route_mode = "driving";
     }
-
+    
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +76,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
-        
-        Toolbar main_toolbar = findViewById(R.id.main_toolbar);
-        main_toolbar.setTitle(R.string.app_name);
-        setSupportActionBar(main_toolbar);
         
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
@@ -117,6 +115,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         
         //this.setButtons();
         //this.setSpinners();
+        this.setToolbar();
     }
 
     /**
@@ -262,4 +261,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     
      */
+    
+    private void setToolbar(){
+        Toolbar main_toolbar = findViewById(R.id.main_toolbar);
+        main_toolbar.setTitle(R.string.app_name);
+        setSupportActionBar(main_toolbar);
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater settings = getMenuInflater();
+        settings.inflate(R.menu.toolbar_menu, menu);
+        
+        return settings != null;
+    }
 }
