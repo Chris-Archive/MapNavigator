@@ -9,6 +9,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.mapnavigator.R;
 
@@ -18,30 +19,22 @@ public class ToolbarSettings extends AppCompatActivity {
 	private String unit;
 	
 	/**
-	 * Automatically set the selected unit in the dropdown spinner menu to save results
+	 * Set and localize the top toolbar for the settings option.
 	 */
-	private void getSelectedSpinnerOption(){
-		unit_type.setSelection(0);
-		
-		for(int i = 0; i < distance_units.length; ++i){
-			if(unit.equals(distance_units[i].toLowerCase())){
-				unit_type.setSelection(i);
-				return;
-			}
-		}
+	private void setToolbar(){
+		Toolbar main_toolbar = findViewById(R.id.main_toolbar);
+		main_toolbar.setTitle(R.string.main_toolbar_settings_title);
+		setSupportActionBar(main_toolbar);
 	}
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.toolbar_settings);
-		unit_type = findViewById(R.id.main_toolbar_settings_distanceunit);
-		distance_units = new String[]{"Metric", "Imperial"};
-		unit = getIntent().getStringExtra("unit");
+	/**
+	 * Set the distance spinners to allocate the available values.
+	 */
+	private void setDistanceSpinner(){
 		ArrayAdapter<String> adapter = new ArrayAdapter<>(
-				ToolbarSettings.this,
-				R.layout.toolbar_settings_settings_distanceunit_textview,
-				distance_units
+			ToolbarSettings.this,
+			R.layout.toolbar_settings_settings_distanceunit_textview,
+			distance_units
 		);
 		
 		adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
@@ -51,8 +44,10 @@ public class ToolbarSettings extends AppCompatActivity {
 			
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-				unit = adapterView.getItemAtPosition(i).toString();
-				Toast.makeText(ToolbarSettings.this, unit + " selected", Toast.LENGTH_SHORT).show();
+				if(!unit.equals(adapterView.getItemAtPosition(i).toString().toLowerCase())){
+					unit = adapterView.getItemAtPosition(i).toString();
+					Toast.makeText(ToolbarSettings.this, unit + " selected", Toast.LENGTH_SHORT).show();
+				}
 				unit = unit.toLowerCase();
 				System.out.printf("%s\n", unit);
 			}
@@ -62,6 +57,32 @@ public class ToolbarSettings extends AppCompatActivity {
 				unit = "metric";
 			}
 		});
+	}
+	
+	/**
+	 * Automatically set the selected unit in the dropdown spinner menu to save results
+	 */
+	private void getSelectedSpinnerOption(){
+		for(int i = 0; i < distance_units.length; ++i){
+			if(unit.equals(distance_units[i].toLowerCase())){
+				unit_type.setSelection(i);
+				return;
+			}
+		}
+		
+		unit_type.setSelection(0);
+	}
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.toolbar_settings);
+		setToolbar();
+		unit_type = findViewById(R.id.main_toolbar_settings_distanceunit);
+		distance_units = new String[]{"Metric", "Imperial"};
+		unit = getIntent().getStringExtra("unit");
+		
+		this.setDistanceSpinner();
 		
 	}
 	

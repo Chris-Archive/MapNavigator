@@ -176,8 +176,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         LatLng destinationPos,
                                         String mode) {
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
-                sourcePos.latitude + "," + sourcePos.longitude + "&destinations=" + destinationPos.latitude + "," + destinationPos.longitude  +
-                "&mode=" + mode + "&key=" + getString(R.string.API_KEY);
+                sourcePos.latitude + "," + sourcePos.longitude + "&destinations=" +
+                destinationPos.latitude + "," + destinationPos.longitude  +
+                "&mode=" + mode + "&units=" + distance_unit +
+                "&key=" + getString(R.string.API_KEY);
         
         return url;
     }
@@ -200,8 +202,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         DirectionsAPICaller route_API_call = new DirectionsAPICaller(MapsActivity.this, new RouteParser());
         DirectionsAPICaller distance_matrix_API_call = new DirectionsAPICaller(MapsActivity.this, new DistanceMatrixParser());
         
-        //route_API_call.execute(route_url);
-        //distance_matrix_API_call.execute(distance_matrix_url);
+        route_API_call.execute(route_url);
+        distance_matrix_API_call.execute(distance_matrix_url);
 
         Log.d("MapsActivity::getRoute", route_url);
         Log.d("MapsActivity::getRoute", distance_matrix_url);
