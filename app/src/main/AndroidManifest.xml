@@ -35,6 +35,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.example.menus.ToolbarSettings"
+            android:exported="false">
+        </activity>
     </application>
 
 </manifest>

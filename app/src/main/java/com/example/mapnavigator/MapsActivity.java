@@ -1,5 +1,7 @@
 package com.example.mapnavigator;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -19,7 +21,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.menus.ToolbarSettings;
-import com.example.tracecallbacks.SettingsCallback;
 import com.example.tracecallbacks.TaskCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -39,7 +40,7 @@ import com.google.android.gms.tasks.Task;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, TaskCallback, SettingsCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, TaskCallback {
 
     private SupportMapFragment mapFragment;
     private ActivityMapsBinding binding;
@@ -223,12 +224,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
     }
     
-    @Override
-    public void onDistanceSetting(Object... values){
-        distance_unit = (String)values[0];
-        System.out.printf("%s\n", distance_unit);
-    }
-    
     /*
     private void setButtons(){
         final Button clear_map_btn = findViewById(R.id.clear_map_btn);
@@ -281,13 +276,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return settings != null;
     }
     
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                Intent intent = result.getData();
+                
+                if(intent != null){
+                    distance_unit = intent.getStringExtra("unit");
+                    Log.d("unit:", distance_unit);
+                }
+            }
+    );
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
+        
         switch(item.getItemId()){
             case R.id.main_toolbar_settings: {
-                Toast.makeText(MapsActivity.this, "Selected Settings", Toast.LENGTH_SHORT).show();
                 Intent settings_menu = new Intent(MapsActivity.this, ToolbarSettings.class);
-                startActivity(settings_menu);
+                settings_menu.putExtra("unit", distance_unit);
+                activityResultLauncher.launch(settings_menu);
             }
             
             default: {

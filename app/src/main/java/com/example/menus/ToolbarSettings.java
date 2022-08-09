@@ -1,8 +1,7 @@
 package com.example.menus;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,30 +11,42 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mapnavigator.R;
-import com.example.tracecallbacks.SettingsCallback;
-
-import java.sql.Array;
-import java.util.Locale;
 
 public class ToolbarSettings extends AppCompatActivity {
-	private SettingsCallback settingsCallback;
 	private Spinner unit_type;
 	private String[] distance_units;
 	private String unit;
 	
+	/**
+	 * Automatically set the selected unit in the dropdown spinner menu to save results
+	 */
+	private void getSelectedSpinnerOption(){
+		unit_type.setSelection(0);
+		
+		for(int i = 0; i < distance_units.length; ++i){
+			if(unit.equals(distance_units[i].toLowerCase())){
+				unit_type.setSelection(i);
+				return;
+			}
+		}
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.toolbar_settings);
 		unit_type = findViewById(R.id.main_toolbar_settings_distanceunit);
 		distance_units = new String[]{"Metric", "Imperial"};
-		unit = "metric";
-		settingsCallback = (SettingsCallback) ToolbarSettings.this;
-		
-		ArrayAdapter<String> adapter = new ArrayAdapter<>(ToolbarSettings.this,
-				R.layout.travel_method_list, distance_units);
+		unit = getIntent().getStringExtra("unit");
+		ArrayAdapter<String> adapter = new ArrayAdapter<>(
+				ToolbarSettings.this,
+				R.layout.toolbar_settings_settings_distanceunit_textview,
+				distance_units
+		);
 		
 		adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
 		unit_type.setAdapter(adapter);
+		getSelectedSpinnerOption();
 		unit_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			
 			@Override
@@ -52,6 +63,13 @@ public class ToolbarSettings extends AppCompatActivity {
 			}
 		});
 		
-		settingsCallback.onDistanceSetting(unit);
+	}
+	
+	@Override
+	public void onBackPressed(){
+		Intent intent = new Intent();
+		intent.putExtra("unit", unit);
+		setResult(0, intent);
+		ToolbarSettings.super.onBackPressed();
 	}
 }
