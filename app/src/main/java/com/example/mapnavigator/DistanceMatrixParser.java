@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.tracecallbacks.TaskCallback;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -52,6 +54,7 @@ public class DistanceMatrixParser extends AsyncTask<String, Void, Map<String, St
 		return distance_duration;
 	}
 	
+	
 	private Map<String, String> parseRequest(JSONObject response){
 		Map<String, String> distance_duration = new HashMap<>();
 		JSONArray rows;
@@ -59,7 +62,6 @@ public class DistanceMatrixParser extends AsyncTask<String, Void, Map<String, St
 		JSONObject distance, duration;
 		
 		try {
-			
 			rows = response.getJSONArray("rows");
 			elements = rows.getJSONObject(0).getJSONArray("elements").getJSONObject(0);
 			

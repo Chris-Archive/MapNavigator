@@ -1,4 +1,4 @@
-package com.example.mapnavigator;
+package com.example.tracecallbacks;
 
 public interface TaskCallback {
     void onRouteDone(Object... values);

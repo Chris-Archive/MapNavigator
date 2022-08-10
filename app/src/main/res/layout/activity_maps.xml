@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -16,19 +17,34 @@
         android:gravity="center"
         android:orientation="horizontal">
 
+        <include
+            android:id="@+id/main_toolbar"
+            layout="@layout/toolbar"
+            />
+        <!--
         <Button
-            android:layout_width="18mm"
-            android:layout_height="12mm"
-            android:textSize="8pt"
+            android:layout_width="1mm"
+            android:layout_height="1mm"
+            android:textSize="1pt"
             android:text="Clear Map"
             android:id="@+id/clear_map_btn"
             />
 
+        <Button
+            android:layout_width="1mm"
+            android:layout_height="1mm"
+            android:textSize="1pt"
+            android:text="Draw Route"
+            android:id="@+id/draw_route_btn"
+            />
+
         <Spinner
             android:id="@+id/travel_method_menu_spinner"
-            android:layout_width="24mm"
-            android:layout_height="12mm"
+            android:layout_width="1mm"
+            android:layout_height="1mm"
             android:background="@android:drawable/btn_dropdown" />
+
+            -->
     </LinearLayout>
 
 </fragment>

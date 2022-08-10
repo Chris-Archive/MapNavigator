@@ -1,24 +1,27 @@
 package com.example.mapnavigator;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.buttons.ClearMapBtn;
+import com.example.menus.ToolbarSettings;
+import com.example.tracecallbacks.TaskCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,16 +40,15 @@ import com.google.android.gms.tasks.Task;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, TaskCallback {
 
-    private GoogleMap mMap;
     private SupportMapFragment mapFragment;
     private ActivityMapsBinding binding;
     private FusedLocationProviderClient client;
     private LocationManager locationManager;
     private Marker currentLocationMarker;
-    private Polyline current_polyline;
     private String route_mode;
+    private String distance_unit;
     
     private final int LOCATION_REFRESH_TIME = 10000; //10 seconds to update
     private final int LOCATION_REFRESH_DISTANCE = 500; //500 meters to update
@@ -62,8 +64,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         polylines = new ConcurrentHashMap<>();
         markerCount = 1;
         route_mode = "driving";
+        distance_unit = "metric";
     }
-
+    
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
-
+        
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
         
         //Check if the user has granted the appropriate permissions
@@ -108,18 +112,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         });
         
-        this.setButtons();
-        this.setSpinners();
+        //this.setButtons();
+        //this.setSpinners();
+        this.setToolbar();
     }
 
     /**
      * Manipulates the map once available.
+     * Though he map is handled through a fragment, onMapReady() is still required.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-    }
-
+    public void onMapReady(GoogleMap googleMap) {}
+    
+    /**
+     * Runs when a user selects whether or not he wants to grant a location permission for the App.
+     * @param requestCode The location permission request code
+     * @param permissions The permissions requested
+     * @param grantResults The result of a user's choice
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -132,7 +142,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
+    
     private void getCurrentLocation(){
         @SuppressLint("MissingPermission")
         Task<Location> task = client.getLastLocation();
@@ -171,8 +181,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         LatLng destinationPos,
                                         String mode) {
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
-                sourcePos.latitude + "," + sourcePos.longitude + "&destinations=" + destinationPos.latitude + "," + destinationPos.longitude  +
-                "&mode=" + mode + "&key=" + getString(R.string.API_KEY);
+                sourcePos.latitude + "," + sourcePos.longitude + "&destinations=" +
+                destinationPos.latitude + "," + destinationPos.longitude  +
+                "&mode=" + mode + "&units=" + distance_unit +
+                "&key=" + getString(R.string.API_KEY);
         
         return url;
     }
@@ -202,15 +214,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d("MapsActivity::getRoute", distance_matrix_url);
     }
     
-    
+    /**
+     * Returns the polylines when the route API call is finished executing.
+     * @param polylineProps
+     */
     @Override
     public void onRouteDone(Object... polylineProps){
-
         mapFragment.getMapAsync(googleMap -> {
             polylines.put(googleMap.addPolyline((PolylineOptions) polylineProps[0]), 1);
         });
     }
     
+    /**
+     * Returns the time and distance for each marker route drawn.
+     * @param values
+     */
     @Override
     public void onDistanceMatrixDone(Object... values) {
         Map<String, String> distance_duration = (Map<String, String>)values[0];
@@ -219,6 +237,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
     }
     
+    /*
     private void setButtons(){
         final Button clear_map_btn = findViewById(R.id.clear_map_btn);
         ClearMapBtn clear_map = new ClearMapBtn();
@@ -252,5 +271,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 route_mode = "driving";
             }
         });
+    }
+    
+     */
+    
+    /**
+     * Set the toolbar view.
+     */
+    private void setToolbar(){
+        Toolbar main_toolbar = findViewById(R.id.main_toolbar);
+        main_toolbar.setTitle(R.string.app_name);
+        setSupportActionBar(main_toolbar);
+    }
+    
+    /**
+     * Create an intent when a user selects the options menu in the top toolbar menu.
+     * @param menu The list of options upon selecting the top right menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater settings = getMenuInflater();
+        settings.inflate(R.menu.toolbar_menu, menu);
+        
+        return settings != null;
+    }
+    
+    
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                Intent intent = result.getData();
+                
+                if(intent != null){
+                    distance_unit = intent.getStringExtra("unit");
+                    Log.d("unit:", distance_unit);
+                }
+            }
+    );
+    
+    /**
+     * Runs when the user selects an option from any of the top right menu options
+     * @param item The item that was selected, such as "Settings"
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        
+        switch(item.getItemId()){
+            case R.id.main_toolbar_settings: {
+                Intent settings_menu = new Intent(MapsActivity.this, ToolbarSettings.class);
+                settings_menu.putExtra("unit", distance_unit);
+                activityResultLauncher.launch(settings_menu);
+            }
+            
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
     }
 }
