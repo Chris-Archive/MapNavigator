@@ -119,12 +119,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Manipulates the map once available.
+     * Though he map is handled through a fragment, onMapReady() is still required.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) {}
     
-    }
-
+    /**
+     * Runs when a user selects whether or not he wants to grant a location permission for the App.
+     * @param requestCode The location permission request code
+     * @param permissions The permissions requested
+     * @param grantResults The result of a user's choice
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -137,7 +142,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
-
+    
     private void getCurrentLocation(){
         @SuppressLint("MissingPermission")
         Task<Location> task = client.getLastLocation();
@@ -209,15 +214,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.d("MapsActivity::getRoute", distance_matrix_url);
     }
     
-    
+    /**
+     * Returns the polylines when the route API call is finished executing.
+     * @param polylineProps
+     */
     @Override
     public void onRouteDone(Object... polylineProps){
-
         mapFragment.getMapAsync(googleMap -> {
             polylines.put(googleMap.addPolyline((PolylineOptions) polylineProps[0]), 1);
         });
     }
     
+    /**
+     * Returns the time and distance for each marker route drawn.
+     * @param values
+     */
     @Override
     public void onDistanceMatrixDone(Object... values) {
         Map<String, String> distance_duration = (Map<String, String>)values[0];
@@ -264,12 +275,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     
      */
     
+    /**
+     * Set the toolbar view.
+     */
     private void setToolbar(){
         Toolbar main_toolbar = findViewById(R.id.main_toolbar);
         main_toolbar.setTitle(R.string.app_name);
         setSupportActionBar(main_toolbar);
     }
     
+    /**
+     * Create an intent when a user selects the options menu in the top toolbar menu.
+     * @param menu The list of options upon selecting the top right menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater settings = getMenuInflater();
@@ -277,6 +296,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         
         return settings != null;
     }
+    
     
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -290,6 +310,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
     );
     
+    /**
+     * Runs when the user selects an option from any of the top right menu options
+     * @param item The item that was selected, such as "Settings"
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         

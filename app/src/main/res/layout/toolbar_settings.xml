@@ -24,15 +24,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/main_toolbar_settings_distanceunit_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="112dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="148dp"
         android:layout_marginTop="56dp"
-        android:ems="10"
         android:gravity="center"
-        android:inputType="textPersonName"
         android:text="@string/main_toolbar_settings_distanceunit_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

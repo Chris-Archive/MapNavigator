@@ -13,6 +13,10 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.mapnavigator.R;
 
+/**
+ * Manage the activity for the toolbar's settings, e.g. changing between
+ * the metric and imperial measurement systems.
+ */
 public class ToolbarSettings extends AppCompatActivity {
 	private Spinner unit_type;
 	private String[] distance_units;
@@ -46,10 +50,9 @@ public class ToolbarSettings extends AppCompatActivity {
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 				if(!unit.equals(adapterView.getItemAtPosition(i).toString().toLowerCase())){
 					unit = adapterView.getItemAtPosition(i).toString();
-					Toast.makeText(ToolbarSettings.this, unit + " selected", Toast.LENGTH_SHORT).show();
+					Toast.makeText(ToolbarSettings.this, unit + " measurement system selected.", Toast.LENGTH_SHORT).show();
 				}
 				unit = unit.toLowerCase();
-				System.out.printf("%s\n", unit);
 			}
 			
 			@Override
@@ -73,19 +76,26 @@ public class ToolbarSettings extends AppCompatActivity {
 		unit_type.setSelection(0);
 	}
 	
+	/**
+	 * On creation and start of the intent, initiate the convent view, set the toolbar data,
+	 * then initiate the Spinner
+	 * @param savedInstanceState
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.toolbar_settings);
-		setToolbar();
 		unit_type = findViewById(R.id.main_toolbar_settings_distanceunit);
 		distance_units = new String[]{"Metric", "Imperial"};
 		unit = getIntent().getStringExtra("unit");
 		
-		this.setDistanceSpinner();
-		
+		setToolbar();
+		setDistanceSpinner();
 	}
 	
+	/**
+	 * Returns the options' data upon the a user's press of the back button
+	 */
 	@Override
 	public void onBackPressed(){
 		Intent intent = new Intent();
