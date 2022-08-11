@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.buttons.ClearMapBtn;
 import com.example.mapnavigator.databinding.ActivityMapsBinding;
+import com.example.menus.ToolbarDrawRoute;
 import com.example.menus.ToolbarSettings;
 import com.example.tracecallbacks.TaskCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -41,6 +42,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.DoubleFunction;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, TaskCallback {
 
@@ -55,7 +57,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final int LOCATION_REFRESH_TIME = 10000; //10 seconds to update
     private final int LOCATION_REFRESH_DISTANCE = 500; //500 meters to update
     
-
     ConcurrentHashMap<Marker, Integer> markers;
     ConcurrentHashMap<Polyline, Integer> polylines;
     int markerCount;
@@ -110,7 +111,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 markers.put(marker, markerCount++);
 
-                getRoute(currentLocationMarker, marker, route_mode);
+                getRoute(currentLocationMarker, marker);
             });
         });
         
@@ -167,25 +168,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Get the two positions and the mode, and construct the URL for the API call.
      * @param sourcePos The position of the beginning marker
      * @param destinationPos The position of the destination marker
-     * @param mode The form of traversal {Driving, Walking}
      * @return The URL
      */
     private String getRouteUrl(LatLng sourcePos,
-                               LatLng destinationPos,
-                               String mode) {
+                               LatLng destinationPos) {
     
         return "https://maps.googleapis.com/maps/api/directions/json?origin=" +
                 sourcePos.latitude + "," + sourcePos.longitude + "&destination=" + destinationPos.latitude + "," + destinationPos.longitude  +
-                "&mode=" + mode + "&key=" + getString(R.string.API_KEY);
+                "&mode=" + route_mode + "&key=" + getString(R.string.API_KEY);
     }
     
     private String getDistanceMatrixUrl(LatLng sourcePos,
-                                        LatLng destinationPos,
-                                        String mode) {
+                                        LatLng destinationPos) {
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
                 sourcePos.latitude + "," + sourcePos.longitude + "&destinations=" +
                 destinationPos.latitude + "," + destinationPos.longitude  +
-                "&mode=" + mode + "&units=" + distance_unit +
+                "&mode=" + route_mode + "&units=" + distance_unit +
                 "&key=" + getString(R.string.API_KEY);
         
         return url;
@@ -194,17 +192,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Get the URL and initiate the API call.
      * @param source The source marker
      * @param destination The destination marker
-     * @param mode The form of traversal {Driving, Walking}
      */
     private void getRoute(Marker source,
-                          Marker destination,
-                          String mode){
+                          Marker destination){
         if(source == null || destination == null){
             return;
         }
         
-        String route_url = getRouteUrl(source.getPosition(), destination.getPosition(), mode);
-        String distance_matrix_url = getDistanceMatrixUrl(source.getPosition(), destination.getPosition(), mode);
+        String route_url = getRouteUrl(source.getPosition(), destination.getPosition());
+        String distance_matrix_url = getDistanceMatrixUrl(source.getPosition(), destination.getPosition());
 
         DirectionsAPICaller route_API_call = new DirectionsAPICaller(MapsActivity.this, new RouteParser());
         DirectionsAPICaller distance_matrix_API_call = new DirectionsAPICaller(MapsActivity.this, new DistanceMatrixParser());
@@ -244,9 +240,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private void setButtons(){
         final Button clear_map_btn = findViewById(R.id.clear_map_btn);
-        ClearMapBtn clear_map = new ClearMapBtn();
+        final Button draw_route_btn = findViewById(R.id.draw_route_btn);
         
+        ClearMapBtn clear_map = new ClearMapBtn();
         clear_map.clearMap(clear_map_btn, markers, polylines);
+        
+        draw_route_btn.setOnClickListener(press -> {
+            Intent draw_route_menu = new Intent(MapsActivity.this, ToolbarDrawRoute.class);
+            //draw_route_menu.putExtra("unit", distance_unit);
+            activityResultLauncher.launch(draw_route_menu);
+        });
     }
     
     /*
@@ -284,7 +287,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Set the toolbar view.
      */
     private void setToolbar(){
-        Toolbar main_toolbar = findViewById(R.id.main_toolbar);
+        final Toolbar main_toolbar = findViewById(R.id.main_toolbar);
         main_toolbar.setTitle(R.string.app_name);
         setSupportActionBar(main_toolbar);
     }
@@ -302,15 +305,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return settings != null;
     }
     
-    
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 Intent intent = result.getData();
                 
                 if(intent != null){
-                    distance_unit = intent.getStringExtra("unit");
-                    Log.d("unit:", distance_unit);
+                    String activity_name = intent.getStringExtra("name");
+                    
+                    switch(activity_name){
+                        case "ToolbarDrawRoute": {
+                            Toast.makeText(MapsActivity.this, "TESTING", Toast.LENGTH_LONG).show();
+                        }
+                        
+                        case "ToolbarSettings": {
+                            distance_unit = intent.getStringExtra("unit");
+                        }
+                        
+                        default: {
+                            System.out.println("No activity name defined for intent result.");
+                        }
+                    }
                 }
             }
     );
@@ -335,4 +350,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
+    
+    
 }

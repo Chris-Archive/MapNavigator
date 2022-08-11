@@ -12,6 +12,17 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:textSize="0pt"
+        android:text="Draw Route"
+        android:tooltipText="Draw Route"
+        android:layout_gravity="right"
+        android:id="@+id/draw_route_btn"
+        android:background="@drawable/googleg_standard_color_18"
+        />
+
+    <Button
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:textSize="0pt"
         android:text="Clear Map"
         android:tooltipText="Clear Map"
         android:layout_gravity="right"

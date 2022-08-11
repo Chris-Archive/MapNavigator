@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.mapnavigator">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -20,10 +21,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/API_KEY" />
-
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
+            android:value="@integer/google_play_services_version" />
 
         <activity
             android:name=".MapsActivity"
@@ -38,8 +38,11 @@
 
         <activity
             android:name="com.example.menus.ToolbarSettings"
-            android:exported="false">
-        </activity>
+            android:exported="false"></activity>
+        <activity
+            android:name="com.example.menus.ToolbarDrawRoute"
+            android:exported="false" />
+
     </application>
 
 </manifest>

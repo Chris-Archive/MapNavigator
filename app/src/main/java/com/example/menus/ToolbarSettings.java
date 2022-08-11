@@ -100,6 +100,7 @@ public class ToolbarSettings extends AppCompatActivity {
 	public void onBackPressed(){
 		Intent intent = new Intent();
 		intent.putExtra("unit", unit);
+		intent.putExtra("name", this.getClass().getSimpleName());
 		setResult(0, intent);
 		ToolbarSettings.super.onBackPressed();
 	}

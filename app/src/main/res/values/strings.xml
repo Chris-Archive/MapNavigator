@@ -7,4 +7,6 @@
 
     <string name="main_toolbar_settings_title">Settings</string>
     <string name="main_toolbar_settings_distanceunit_title">Distance Units</string>
+
+    <string name="draw_route_toolbar_settings_title">Draw Route</string>
 </resources>
