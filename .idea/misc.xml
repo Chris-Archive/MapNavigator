@@ -3,16 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/activity_maps.xml" value="0.25" />
-        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/toolbar.xml" value="0.5442708333333334" />
-        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/toolbar_settings.xml" value="0.67" />
-        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/toolbar_settings_distanceunit_laylout.xml" value="0.3432971014492754" />
-        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/toolbar_settings_distanceunit_list.xml" value="0.3432971014492754" />
-        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/toolbar_settings_settings_distanceunit_textview.xml" value="0.2203125" />
-        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/toolbar_settings_spinner.xml" value="0.30885416666666665" />
+        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.271" />
+        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/drawable/ic_launcher_background.xml" value="0.271" />
+        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/activity_maps.xml" value="0.2636226034308779" />
+        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/main_toolbar.xml" value="0.1" />
         <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/layout/travel_method_list.xml" value="0.5432291666666667" />
         <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/menu/menu.xml" value="0.44895833333333335" />
-        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/menu/toolbar_menu.xml" value="0.5442708333333334" />
+        <entry key="..\:/Users/chdes/AndroidStudioProjects/MapNavigator/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.271" />
       </map>
     </option>
   </component>

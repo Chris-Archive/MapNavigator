@@ -18,8 +18,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.buttons.ClearMapBtn;
+import com.example.mapnavigator.databinding.ActivityMapsBinding;
 import com.example.menus.ToolbarSettings;
 import com.example.tracecallbacks.TaskCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,7 +35,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.mapnavigator.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
@@ -112,7 +114,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             });
         });
         
-        //this.setButtons();
+        this.setButtons();
         //this.setSpinners();
         this.setToolbar();
     }
@@ -237,7 +239,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
     }
     
-    /*
+    /**
+     *
+     */
     private void setButtons(){
         final Button clear_map_btn = findViewById(R.id.clear_map_btn);
         ClearMapBtn clear_map = new ClearMapBtn();
@@ -245,6 +249,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         clear_map.clearMap(clear_map_btn, markers, polylines);
     }
     
+    /*
     //TODO: Refactor into Spinner class
     private void setSpinners(){
         final Spinner travel_method_dropdown = findViewById(R.id.travel_method_menu_spinner);

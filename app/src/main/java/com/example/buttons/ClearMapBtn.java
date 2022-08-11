@@ -34,7 +34,6 @@ public class ClearMapBtn extends FragmentActivity {
 			}
 			
 			polylines.clear();
-			
 		});
 	}
 }

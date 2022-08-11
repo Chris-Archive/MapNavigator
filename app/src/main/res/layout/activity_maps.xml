@@ -19,16 +19,9 @@
 
         <include
             android:id="@+id/main_toolbar"
-            layout="@layout/toolbar"
-            />
+            layout="@layout/main_toolbar"/>
+
         <!--
-        <Button
-            android:layout_width="1mm"
-            android:layout_height="1mm"
-            android:textSize="1pt"
-            android:text="Clear Map"
-            android:id="@+id/clear_map_btn"
-            />
 
         <Button
             android:layout_width="1mm"

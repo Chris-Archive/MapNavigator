@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.appcompat.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:elevation="4dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+    <Button
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:textSize="0pt"
+        android:text="Clear Map"
+        android:tooltipText="Clear Map"
+        android:layout_gravity="right"
+        android:id="@+id/clear_map_btn"
+        android:background="@drawable/ic_trashbin"
+        />
+</androidx.appcompat.widget.Toolbar>

@@ -26,7 +26,7 @@ public class ToolbarSettings extends AppCompatActivity {
 	 * Set and localize the top toolbar for the settings option.
 	 */
 	private void setToolbar(){
-		Toolbar main_toolbar = findViewById(R.id.main_toolbar);
+		Toolbar main_toolbar = findViewById(R.id.settings_toolbar);
 		main_toolbar.setTitle(R.string.main_toolbar_settings_title);
 		setSupportActionBar(main_toolbar);
 	}
