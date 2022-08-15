@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.android.SphericalUtil;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -122,7 +123,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Manipulates the map once available.
-     * Though he map is handled through a fragment, onMapReady() is still required.
+     * Though the map is handled through a fragment, onMapReady() is still required.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {}
@@ -143,6 +144,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 this.getCurrentLocation();
             }
+            
         }
     }
     
@@ -207,7 +209,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         
         route_API_call.execute(route_url);
         distance_matrix_API_call.execute(distance_matrix_url);
-
+        
         Log.d("MapsActivity::getRoute", route_url);
         Log.d("MapsActivity::getRoute", distance_matrix_url);
     }
@@ -242,12 +244,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final Button clear_map_btn = findViewById(R.id.clear_map_btn);
         final Button draw_route_btn = findViewById(R.id.draw_route_btn);
         
-        ClearMapBtn clear_map = new ClearMapBtn();
-        clear_map.clearMap(clear_map_btn, markers, polylines);
+        //ClearMapBtn clear_map = new ClearMapBtn();
+        //clear_map.clearMap(clear_map_btn, markers, polylines);
+        
+        clear_map_btn.setOnClickListener(press -> {
+            for(Marker marker : markers.keySet()){
+                marker.remove();
+            }
+            
+            markers.clear();
+            
+            for(Polyline polyline : polylines.keySet()){
+                polyline.remove();
+            }
+    
+            polylines.clear();
+        });
         
         draw_route_btn.setOnClickListener(press -> {
             Intent draw_route_menu = new Intent(MapsActivity.this, ToolbarDrawRoute.class);
-            //draw_route_menu.putExtra("unit", distance_unit);
+            
+            draw_route_menu.putExtra("unit", distance_unit);
             activityResultLauncher.launch(draw_route_menu);
         });
     }
@@ -316,14 +333,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     switch(activity_name){
                         case "ToolbarDrawRoute": {
                             Toast.makeText(MapsActivity.this, "TESTING", Toast.LENGTH_LONG).show();
+                            
+                            break;
                         }
                         
                         case "ToolbarSettings": {
                             distance_unit = intent.getStringExtra("unit");
+                            
+                            break;
                         }
                         
                         default: {
                             System.out.println("No activity name defined for intent result.");
+                            
+                            break;
                         }
                     }
                 }
@@ -342,6 +365,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.main_toolbar_settings: {
                 Intent settings_menu = new Intent(MapsActivity.this, ToolbarSettings.class);
                 settings_menu.putExtra("unit", distance_unit);
+                System.out.printf("Distance unit onOptionsItemSelected%s\n", distance_unit);
                 activityResultLauncher.launch(settings_menu);
             }
             

@@ -87,8 +87,8 @@ public class ToolbarSettings extends AppCompatActivity {
 		setContentView(R.layout.toolbar_settings);
 		unit_type = findViewById(R.id.main_toolbar_settings_distanceunit);
 		distance_units = new String[]{"Metric", "Imperial"};
+		System.out.printf("unit intent%s\n", getIntent().getStringExtra("unit"));
 		unit = getIntent().getStringExtra("unit");
-		
 		setToolbar();
 		setDistanceSpinner();
 	}
@@ -99,6 +99,7 @@ public class ToolbarSettings extends AppCompatActivity {
 	@Override
 	public void onBackPressed(){
 		Intent intent = new Intent();
+		System.out.printf("unit: %s\n", unit);
 		intent.putExtra("unit", unit);
 		intent.putExtra("name", this.getClass().getSimpleName());
 		setResult(0, intent);
