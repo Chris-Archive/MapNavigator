@@ -1,12 +1,5 @@
 package com.example.mapnavigator;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -18,9 +11,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+
+import com.example.mapnavigator.databinding.ActivityMapsBinding;
+import com.example.markers.SMarker;
+import com.example.menus.ToolbarDrawRoute;
 import com.example.menus.ToolbarSettings;
+import com.example.messages.MarkerMessage;
 import com.example.tracecallbacks.TaskCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -32,7 +36,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.mapnavigator.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
@@ -51,9 +54,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String distance_unit;
     
     private final int LOCATION_REFRESH_TIME = 10000; //10 seconds to update
-    private final int LOCATION_REFRESH_DISTANCE = 500; //500 meters to update
+    private final int LOCATION_REFRESH_DISTANCE = 50; //50 meters to update
     
-
     ConcurrentHashMap<Marker, Integer> markers;
     ConcurrentHashMap<Polyline, Integer> polylines;
     int markerCount;
@@ -79,6 +81,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
         
+        if(ActivityCompat.checkSelfPermission(MapsActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            }, 44);
+        }
+        
         //Check if the user has granted the appropriate permissions
         if(ActivityCompat.checkSelfPermission(MapsActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
@@ -90,11 +99,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     location -> this.getCurrentLocation()
             );
         }
-        else {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION
-            }, 44);
-        }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -104,44 +108,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             googleMap.getUiSettings().setZoomControlsEnabled(true);
 
             googleMap.setOnMapClickListener(latLng -> {
-                Marker marker = googleMap.addMarker(new MarkerOptions().position(latLng).title(""));
+                Marker marker = googleMap.addMarker(new MarkerOptions().position(latLng).title("Marker " + markerCount + " " + latLng.latitude + " " + latLng.longitude));
 
                 markers.put(marker, markerCount++);
 
-                getRoute(currentLocationMarker, marker, route_mode);
+                //getRoute(currentLocationMarker, marker);
             });
         });
         
-        //this.setButtons();
-        //this.setSpinners();
+        this.setButtons();
         this.setToolbar();
     }
 
     /**
      * Manipulates the map once available.
-     * Though he map is handled through a fragment, onMapReady() is still required.
+     * Though the map is handled through a fragment, onMapReady() is still required.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {}
-    
-    /**
-     * Runs when a user selects whether or not he wants to grant a location permission for the App.
-     * @param requestCode The location permission request code
-     * @param permissions The permissions requested
-     * @param grantResults The result of a user's choice
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults){
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if(requestCode == 44){
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                this.getCurrentLocation();
-            }
-        }
-    }
     
     private void getCurrentLocation(){
         @SuppressLint("MissingPermission")
@@ -151,10 +135,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if(location != null){
                 mapFragment.getMapAsync(googleMap -> {
                     LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
+                    //Remove the former marker on the map when updated
+                    if(currentLocationMarker != null){
+                        currentLocationMarker.remove();
+                    }
                     currentLocationMarker = googleMap.addMarker(new MarkerOptions().position(currentLocation).title("Current Location")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
+                    
+                    
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
                 });
             }
@@ -165,51 +153,49 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Get the two positions and the mode, and construct the URL for the API call.
      * @param sourcePos The position of the beginning marker
      * @param destinationPos The position of the destination marker
-     * @param mode The form of traversal {Driving, Walking}
      * @return The URL
      */
     private String getRouteUrl(LatLng sourcePos,
-                               LatLng destinationPos,
-                               String mode) {
-    
-        return "https://maps.googleapis.com/maps/api/directions/json?origin=" +
+                               LatLng destinationPos) {
+        String url = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
                 sourcePos.latitude + "," + sourcePos.longitude + "&destination=" + destinationPos.latitude + "," + destinationPos.longitude  +
-                "&mode=" + mode + "&key=" + getString(R.string.API_KEY);
+                "&mode=" + route_mode + "&key=" + getString(R.string.API_KEY);
+        System.out.printf("%s\n", url);
+        
+        return url;
+    
     }
     
     private String getDistanceMatrixUrl(LatLng sourcePos,
-                                        LatLng destinationPos,
-                                        String mode) {
+                                        LatLng destinationPos) {
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
                 sourcePos.latitude + "," + sourcePos.longitude + "&destinations=" +
                 destinationPos.latitude + "," + destinationPos.longitude  +
-                "&mode=" + mode + "&units=" + distance_unit +
+                "&mode=" + route_mode + "&units=" + distance_unit +
                 "&key=" + getString(R.string.API_KEY);
         
         return url;
     }
     /**
      * Get the URL and initiate the API call.
-     * @param source The source marker
-     * @param destination The destination marker
-     * @param mode The form of traversal {Driving, Walking}
+     * @param sourcePos The source marker
+     * @param destinationPos The destination marker
      */
-    private void getRoute(Marker source,
-                          Marker destination,
-                          String mode){
-        if(source == null || destination == null){
+    private void getRoute(LatLng sourcePos,
+                          LatLng destinationPos){
+        if(sourcePos == null || destinationPos == null){
             return;
         }
         
-        String route_url = getRouteUrl(source.getPosition(), destination.getPosition(), mode);
-        String distance_matrix_url = getDistanceMatrixUrl(source.getPosition(), destination.getPosition(), mode);
+        String route_url = getRouteUrl(sourcePos, destinationPos);
+        String distance_matrix_url = getDistanceMatrixUrl(sourcePos, destinationPos);
 
         DirectionsAPICaller route_API_call = new DirectionsAPICaller(MapsActivity.this, new RouteParser());
         DirectionsAPICaller distance_matrix_API_call = new DirectionsAPICaller(MapsActivity.this, new DistanceMatrixParser());
         
         route_API_call.execute(route_url);
         distance_matrix_API_call.execute(distance_matrix_url);
-
+        
         Log.d("MapsActivity::getRoute", route_url);
         Log.d("MapsActivity::getRoute", distance_matrix_url);
     }
@@ -236,15 +222,51 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         
         Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
     }
-    
-    /*
+    /**
+     *
+     */
     private void setButtons(){
         final Button clear_map_btn = findViewById(R.id.clear_map_btn);
-        ClearMapBtn clear_map = new ClearMapBtn();
+        final Button draw_route_btn = findViewById(R.id.start_draw_route_intent_btn);
         
-        clear_map.clearMap(clear_map_btn, markers, polylines);
+        clear_map_btn.setOnClickListener(press -> {
+            for(Marker marker : markers.keySet()){
+                marker.remove();
+            }
+            
+            markers.clear();
+            
+            for(Polyline polyline : polylines.keySet()){
+                polyline.remove();
+            }
+    
+            polylines.clear();
+        });
+        
+        draw_route_btn.setOnClickListener(press -> {
+            Intent draw_route_menu = new Intent(MapsActivity.this, ToolbarDrawRoute.class);
+            draw_route_menu.putExtra("unit", distance_unit);
+            
+            MarkerMessage markerMessage = new MarkerMessage();
+            
+            for(Marker x : markers.keySet()){
+                SMarker sMarker = new SMarker(
+                        x.getPosition().latitude,
+                        x.getPosition().longitude,
+                        x.getTitle());
+                
+                markerMessage.put(sMarker);
+            }
+            
+            draw_route_menu.putExtra("markers", markerMessage);
+            
+            activityResultLauncher.launch(draw_route_menu);
+        });
+        
+        
     }
     
+    /*
     //TODO: Refactor into Spinner class
     private void setSpinners(){
         final Spinner travel_method_dropdown = findViewById(R.id.travel_method_menu_spinner);
@@ -279,7 +301,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Set the toolbar view.
      */
     private void setToolbar(){
-        Toolbar main_toolbar = findViewById(R.id.main_toolbar);
+        final Toolbar main_toolbar = findViewById(R.id.main_toolbar);
         main_toolbar.setTitle(R.string.app_name);
         setSupportActionBar(main_toolbar);
     }
@@ -294,18 +316,50 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         MenuInflater settings = getMenuInflater();
         settings.inflate(R.menu.toolbar_menu, menu);
         
-        return settings != null;
+        return true;
     }
-    
     
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 Intent intent = result.getData();
                 
-                if(intent != null){
-                    distance_unit = intent.getStringExtra("unit");
-                    Log.d("unit:", distance_unit);
+                if(intent == null){
+                    return;
+                }
+                
+                String activity_name = intent.getStringExtra("name");
+                
+                Toast.makeText(MapsActivity.this, activity_name, Toast.LENGTH_LONG).show();
+                    
+                switch(activity_name){
+                    case "ToolbarDrawRoute": {
+    
+                        SMarker start = (SMarker) intent.getSerializableExtra("start");
+                        SMarker end = (SMarker) intent.getSerializableExtra("end");
+    
+                        //Toast.makeText(MapsActivity.this, start.getTitle(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(MapsActivity.this, end.getTitle(), Toast.LENGTH_LONG).show();
+                        
+                        //if(start == null || end == null){
+                            getRoute(new LatLng(start.getLatitude(), start.getLongitude()),
+                                    new LatLng(end.getLatitude(), end.getLongitude()));
+                        //}
+                        
+                        break;
+                    }
+                        
+                    case "ToolbarSettings": {
+                        distance_unit = intent.getStringExtra("unit");
+                            
+                        break;
+                    }
+                        
+                    default: {
+                        System.out.println("No activity name defined for intent result.");
+                            
+                        break;
+                    }
                 }
             }
     );
@@ -322,6 +376,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.main_toolbar_settings: {
                 Intent settings_menu = new Intent(MapsActivity.this, ToolbarSettings.class);
                 settings_menu.putExtra("unit", distance_unit);
+                System.out.printf("Distance unit onOptionsItemSelected%s\n", distance_unit);
                 activityResultLauncher.launch(settings_menu);
             }
             
@@ -330,4 +385,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
+    
+    
 }

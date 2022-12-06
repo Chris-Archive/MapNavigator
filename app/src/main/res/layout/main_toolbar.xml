@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.appcompat.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:elevation="4dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+    <Button
+        android:id="@+id/start_draw_route_intent_btn"
+        android:layout_width="32dp"
+        android:layout_height="48dp"
+        android:layout_gravity="right"
+        android:background="@drawable/googleg_standard_color_18"
+        android:text="Draw Route"
+        android:textSize="0pt"
+        android:tooltipText="Draw Route" />
+
+    <Button
+        android:id="@+id/list_routes_btn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="right"
+        android:background="@drawable/common_full_open_on_phone"
+        android:text="Clear Map"
+        android:textSize="0pt"
+        android:tooltipText="List Routes" />
+
+    <Button
+        android:id="@+id/clear_map_btn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="right"
+        android:background="@drawable/ic_trashbin"
+        android:text="Clear Map"
+        android:textSize="0pt"
+        android:tooltipText="Clear Map" />
+</androidx.appcompat.widget.Toolbar>

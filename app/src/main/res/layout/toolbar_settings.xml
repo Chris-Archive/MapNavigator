@@ -9,7 +9,7 @@
     tools:context="com.example.menus.ToolbarSettings">
 
     <include
-        android:id="@+id/main_toolbar"
+        android:id="@+id/settings_toolbar"
         layout="@layout/toolbar"
         />
 
