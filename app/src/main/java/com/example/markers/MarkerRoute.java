@@ -3,6 +3,7 @@ package com.example.markers;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
 
 /**
  * Holds a source marker, a destination marker, and information
@@ -14,6 +15,7 @@ public class MarkerRoute {
 	private String route_mode;
 	private String distance;
 	private String time;
+	private Polyline routePolyline;
 	
 	public MarkerRoute(@NonNull Marker source){
 		this.source = source;
@@ -58,5 +60,17 @@ public class MarkerRoute {
 	
 	public void setTime(String time) {
 		this.time = time;
+	}
+	
+	public Polyline getRoutePolyline() {
+		return routePolyline;
+	}
+	
+	public void setRoutePolyline(Polyline routePolyline) {
+		this.routePolyline = routePolyline;
+	}
+	
+	public void clearRoute(){
+		routePolyline.remove();
 	}
 }
